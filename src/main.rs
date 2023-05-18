@@ -3,22 +3,31 @@ use rand::prelude::*;
 
 pub const PLAYER_SPEED: f32 = 30.;
 pub const ENEMY_SPEED: f32 = 10.;
-pub const AMOUNT_OF_ENEMIES: usize = 4;
+pub const AMOUNT_OF_ENEMIES: usize = 1;
+pub const AMOUNT_OF_ASTRONAUTS: usize = 4;
 pub const WORLD_SIZE_X: f32 = 20.;
 pub const WORLD_SIZE_Z: f32 = 20.;
+pub const ASTRONAUT_SPAWN_TIMER: f32 = 1.;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .init_resource::<Score>()
+        .init_resource::<AstronautSpawnTimer>()
         .add_startup_system(spawn_camera)
         .add_startup_system(spawn_player)
         .add_startup_system(spawn_enemies)
+        .add_startup_system(spawn_astronauts)
         .add_system(player_movement)
         .add_system(confine_player_movement)
         .add_system(enemy_movement)
         .add_system(update_enemy_direction)
         .add_system(confine_enemy_movement)
         .add_system(enemy_hit_player)
+        .add_system(player_hit_astronaut)
+        .add_system(update_score)
+        .add_system(tick_spawn_astronauts)
+        .add_system(spawn_astronauts_over_time)
         .run();
 }
 
@@ -26,8 +35,35 @@ fn main() {
 pub struct Player {}
 
 #[derive(Component)]
+pub struct Astronaut {}
+
+#[derive(Component)]
 pub struct Enemy {
     direction: Vec3,
+}
+
+#[derive(Resource)]
+pub struct Score {
+    pub value: u32,
+}
+
+impl Default for Score {
+    fn default() -> Self {
+        Score { value: 0 }
+    }
+}
+
+#[derive(Resource)]
+pub struct AstronautSpawnTimer {
+    pub timer: Timer,
+}
+
+impl Default for AstronautSpawnTimer {
+    fn default() -> Self {
+        AstronautSpawnTimer {
+            timer: Timer::from_seconds(ASTRONAUT_SPAWN_TIMER, TimerMode::Repeating),
+        }
+    }
 }
 
 pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -95,6 +131,36 @@ pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                     transform: Transform::from_xyz(2.5, 2.5, 2.5),
+                    ..default()
+                });
+            });
+    }
+}
+
+pub fn spawn_astronauts(mut commands: Commands, asset_server: Res<AssetServer>) {
+    for _ in 0..AMOUNT_OF_ASTRONAUTS {
+        let random_x = random::<f32>() * WORLD_SIZE_X;
+        let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+        commands
+            .spawn((
+                SceneBundle {
+                    scene: asset_server.load("models/astronautA.glb#Scene0"),
+                    transform: Transform::from_xyz(random_x, 0., random_z)
+                        .with_rotation(Quat::from_rotation_y(random::<f32>() * 4.712389)),
+                    ..default()
+                },
+                Astronaut {},
+            ))
+            .with_children(|children| {
+                children.spawn(PointLightBundle {
+                    point_light: PointLight {
+                        color: Color::WHITE,
+                        intensity: 1000.0,
+                        range: 5.0,
+                        ..default()
+                    },
+                    transform: Transform::from_xyz(1., 1., 1.),
                     ..default()
                 });
             });
@@ -238,5 +304,73 @@ pub fn enemy_hit_player(
                 commands.entity(player_entity).despawn_recursive();
             }
         }
+    }
+}
+
+pub fn player_hit_astronaut(
+    mut commands: Commands,
+    player_query: Query<&Transform, With<Player>>,
+    mut astronaut_query: Query<(Entity, &Transform), With<Astronaut>>,
+    audio: Res<Audio>,
+    asset_server: Res<AssetServer>,
+    mut score: ResMut<Score>,
+) {
+    if let Ok(player_transform) = player_query.get_single() {
+        for (astronaut_entity, astronaut_transform) in astronaut_query.iter_mut() {
+            let distance = astronaut_transform
+                .translation
+                .distance(player_transform.translation);
+            if distance < 2. {
+                let sound_effect = asset_server.load("audio/doorOpen_000.ogg");
+                audio.play(sound_effect);
+                score.value += 1;
+
+                commands.entity(astronaut_entity).despawn_recursive();
+            }
+        }
+    }
+}
+
+pub fn update_score(score: Res<Score>) {
+    if score.is_changed() {
+        println!("Score: {}", score.value);
+    }
+}
+
+pub fn tick_spawn_astronauts(mut astronaut_spawn_timer: ResMut<AstronautSpawnTimer>, time: Res<Time>) {
+    astronaut_spawn_timer.timer.tick(time.delta());
+}
+
+pub fn spawn_astronauts_over_time(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    astronaut_spawn_timer: Res<AstronautSpawnTimer>,
+) {
+    if astronaut_spawn_timer.timer.finished() {
+        let random_x = random::<f32>() * WORLD_SIZE_X;
+        let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+        commands
+            .spawn((
+                SceneBundle {
+                    scene: asset_server.load("models/astronautA.glb#Scene0"),
+                    transform: Transform::from_xyz(random_x, 0., random_z)
+                        .with_rotation(Quat::from_rotation_y(random::<f32>() * 4.712389)),
+                    ..default()
+                },
+                Astronaut {},
+            ))
+            .with_children(|children| {
+                children.spawn(PointLightBundle {
+                    point_light: PointLight {
+                        color: Color::WHITE,
+                        intensity: 1000.0,
+                        range: 5.0,
+                        ..default()
+                    },
+                    transform: Transform::from_xyz(1., 1., 1.),
+                    ..default()
+                });
+            });
     }
 }

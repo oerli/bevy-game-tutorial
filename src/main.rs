@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, app::AppExit};
 use rand::prelude::*;
 
 pub const PLAYER_SPEED: f32 = 30.;
@@ -8,12 +8,14 @@ pub const AMOUNT_OF_ASTRONAUTS: usize = 4;
 pub const WORLD_SIZE_X: f32 = 20.;
 pub const WORLD_SIZE_Z: f32 = 20.;
 pub const ASTRONAUT_SPAWN_TIMER: f32 = 1.;
+pub const ENEMY_SPAWN_TIMER: f32 = 5.;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<Score>()
         .init_resource::<AstronautSpawnTimer>()
+        .init_resource::<EnemySpawnTimer>()
         .add_startup_system(spawn_camera)
         .add_startup_system(spawn_player)
         .add_startup_system(spawn_enemies)
@@ -28,6 +30,9 @@ fn main() {
         .add_system(update_score)
         .add_system(tick_spawn_astronauts)
         .add_system(spawn_astronauts_over_time)
+        .add_system(tick_spawn_enemies)
+        .add_system(spawn_enemies_over_time)
+        .add_system(exit_game)
         .run();
 }
 
@@ -62,6 +67,19 @@ impl Default for AstronautSpawnTimer {
     fn default() -> Self {
         AstronautSpawnTimer {
             timer: Timer::from_seconds(ASTRONAUT_SPAWN_TIMER, TimerMode::Repeating),
+        }
+    }
+}
+
+#[derive(Resource)]
+pub struct EnemySpawnTimer {
+    pub timer: Timer,
+}
+
+impl Default for EnemySpawnTimer {
+    fn default() -> Self {
+        EnemySpawnTimer {
+            timer: Timer::from_seconds(ENEMY_SPAWN_TIMER, TimerMode::Repeating),
         }
     }
 }
@@ -337,7 +355,10 @@ pub fn update_score(score: Res<Score>) {
     }
 }
 
-pub fn tick_spawn_astronauts(mut astronaut_spawn_timer: ResMut<AstronautSpawnTimer>, time: Res<Time>) {
+pub fn tick_spawn_astronauts(
+    mut astronaut_spawn_timer: ResMut<AstronautSpawnTimer>,
+    time: Res<Time>,
+) {
     astronaut_spawn_timer.timer.tick(time.delta());
 }
 
@@ -372,5 +393,53 @@ pub fn spawn_astronauts_over_time(
                     ..default()
                 });
             });
+    }
+}
+
+pub fn tick_spawn_enemies(
+    mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
+    time: Res<Time>,
+) {
+    enemy_spawn_timer.timer.tick(time.delta());
+}
+
+pub fn spawn_enemies_over_time(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    enemy_spawn_timer: Res<EnemySpawnTimer>,
+) {
+    if enemy_spawn_timer.timer.finished() {
+        let random_x = random::<f32>() * WORLD_SIZE_X;
+        let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+        commands
+            .spawn((
+                SceneBundle {
+                    scene: asset_server.load("models/craft_racer.glb#Scene0"),
+                    transform: Transform::from_xyz(random_x, 0., random_z),
+                    ..default()
+                },
+                Enemy {
+                    direction: Vec3::new(random::<f32>(), 0., random::<f32>()),
+                },
+            ))
+            .with_children(|children| {
+                children.spawn(PointLightBundle {
+                    point_light: PointLight {
+                        color: Color::WHITE,
+                        intensity: 1000.0,
+                        range: 5.0,
+                        ..default()
+                    },
+                    transform: Transform::from_xyz(2.5, 2.5, 2.5),
+                    ..default()
+                });
+            });
+    }
+}
+
+pub fn exit_game(keyboard_input: Res<Input<KeyCode>>, mut app_exit_event_writer: EventWriter<AppExit>) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        app_exit_event_writer.send(AppExit);
     }
 }

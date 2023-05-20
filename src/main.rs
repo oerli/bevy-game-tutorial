@@ -1,34 +1,40 @@
-use astronaut::AstronautPlugin;
 use bevy::prelude::*;
 
 mod events;
 mod systems;
 
-mod astronaut;
-mod enemy;
-mod player;
-mod score;
+mod game;
+mod menu;
 
-use events::*;
+use game::GamePlugin;
+use menu::MenuPlugin;
 use systems::*;
-
-use enemy::EnemyPlugin;
-use player::PlayerPlugin;
-use score::ScorePlugin;
 
 pub const WORLD_SIZE_X: f32 = 20.;
 pub const WORLD_SIZE_Z: f32 = 20.;
 
 fn main() {
     App::new()
+        // Bevy Plugins
         .add_plugins(DefaultPlugins)
-        .add_event::<GameOver>()
-        .add_plugin(AstronautPlugin)
-        .add_plugin(EnemyPlugin)
-        .add_plugin(PlayerPlugin)
-        .add_plugin(ScorePlugin)
+        .add_state::<AppState>()
+        // Game Plugins
+        .add_plugin(MenuPlugin)
+        .add_plugin(GamePlugin)
+        // Startup Systems
         .add_startup_system(spawn_camera)
+        // Systems
         .add_system(exit_game)
         .add_system(handle_game_over)
+        .add_system(transition_to_game_state)
+        .add_system(transition_to_menu_state)
         .run();
+}
+
+#[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+pub enum AppState {
+    #[default]
+    MainMenu,
+    Game,
+    GameOver,
 }

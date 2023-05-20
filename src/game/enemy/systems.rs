@@ -38,6 +38,13 @@ pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
+pub fn despawn_enemies(mut commands: Commands, enemy_query: Query<Entity, With<Enemy>>) {
+    for enemy_entity in enemy_query.iter() {
+        commands.entity(enemy_entity).despawn_recursive();
+        
+    }
+}
+
 pub fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
     for (mut transform, enemy) in enemy_query.iter_mut() {
         transform.translation += enemy.direction * ENEMY_SPEED * time.delta_seconds();
@@ -49,7 +56,7 @@ pub fn update_enemy_direction(
     audio: Res<Audio>,
     asset_server: Res<AssetServer>,
 ) {
-    for (mut transform, mut enemy) in enemy_query.iter_mut() {
+    for (transform, mut enemy) in enemy_query.iter_mut() {
         let mut dierction_changed = false;
 
         let translation = transform.translation;
@@ -90,7 +97,7 @@ pub fn confine_enemy_movement(mut enemy_query: Query<&mut Transform, With<Enemy>
         if translation.z < 0. {
             translation.z = 0.;
         } else if translation.z > WORLD_SIZE_Z {
-            translation.z = WORLD_SIZE_Z
+            translation.z = WORLD_SIZE_Z;
         }
 
         enemy_transform.translation = translation;

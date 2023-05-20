@@ -72,6 +72,12 @@ pub fn spawn_astronauts(mut commands: Commands, asset_server: Res<AssetServer>) 
     }
 }
 
+pub fn despawn_astronauts(mut commands: Commands, astronaut_query: Query<Entity, With<Astronaut>>) {
+    for astronaut_entity in astronaut_query.iter() {
+        commands.entity(astronaut_entity).despawn_recursive();
+    }
+}
+
 pub fn astronaut_rotation(
     mut astronaut_query: Query<(&mut Transform, &Astronaut)>,
     time: Res<Time>,

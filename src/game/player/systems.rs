@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 use super::components::*;
 use super::PLAYER_SPEED;
-use crate::astronaut::components::Astronaut;
-use crate::enemy::components::Enemy;
-use crate::score::resources::Score;
-use crate::GameOver;
+use crate::events::GameOver;
+use crate::game::astronaut::components::Astronaut;
+use crate::game::enemy::components::Enemy;
+use crate::game::score::resources::Score;
 use crate::{WORLD_SIZE_X, WORLD_SIZE_Z};
 
 pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -30,6 +30,12 @@ pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             });
         });
+}
+
+pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<Player>>) {
+    for player_entity in player_query.iter() {
+        commands.entity(player_entity).despawn_recursive();
+    }
 }
 
 pub fn player_movement(

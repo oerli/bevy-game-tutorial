@@ -26,7 +26,7 @@ pub fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
                     range: 5.0,
                     ..default()
                 },
-                transform: Transform::from_xyz(2.5, 2.5, 2.5),
+                transform: Transform::from_xyz(0., 1., 0.),
                 ..default()
             });
         });

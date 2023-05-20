@@ -31,15 +31,8 @@ pub fn exit_game(
 
 pub fn handle_game_over(
     mut game_over_event_reader: EventReader<GameOver>,
-    mut app_exit_event_writer: EventWriter<AppExit>,
 ) {
-    let mut game_over_event = false;
     for event in game_over_event_reader.iter() {
         println!("Final Score: {:?}", event.score);
-        game_over_event = true;
-    }
-
-    if game_over_event {
-        app_exit_event_writer.send(AppExit);
     }
 }

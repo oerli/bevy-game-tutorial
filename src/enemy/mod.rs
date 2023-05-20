@@ -19,7 +19,7 @@ impl Plugin for EnemyPlugin {
             .add_startup_system(spawn_enemies)
             .add_system(enemy_movement)
             .add_system(update_enemy_direction)
-            .add_system(confine_enemy_movement)
+            .add_system(confine_enemy_movement.after(enemy_movement))
             .add_system(tick_spawn_enemies)
             .add_system(spawn_enemies_over_time);
     }

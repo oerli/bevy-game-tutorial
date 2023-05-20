@@ -31,20 +31,23 @@ pub fn spawn_astronauts_over_time(
                         .with_rotation(Quat::from_rotation_y(random::<f32>() * 4.712389)),
                     ..default()
                 },
-                Astronaut {},
-            ))
-            .with_children(|children| {
-                children.spawn(PointLightBundle {
-                    point_light: PointLight {
-                        color: Color::WHITE,
-                        intensity: 1000.0,
-                        range: 5.0,
-                        ..default()
-                    },
-                    transform: Transform::from_xyz(1., 1., 1.),
-                    ..default()
-                });
-            });
+                Astronaut {
+                    rotation_speed_x: thread_rng().gen_range(-1.0..1.0),
+                    rotation_speed_y: thread_rng().gen_range(-1.0..1.0),
+                },
+            ));
+            // .with_children(|children| {
+            //     children.spawn(PointLightBundle {
+            //         point_light: PointLight {
+            //             color: Color::WHITE,
+            //             intensity: 1000.0,
+            //             range: 5.0,
+            //             ..default()
+            //         },
+            //         transform: Transform::from_xyz(1., 1., 1.),
+            //         ..default()
+            //     });
+            // });
     }
 }
 
@@ -61,19 +64,20 @@ pub fn spawn_astronauts(mut commands: Commands, asset_server: Res<AssetServer>) 
                         .with_rotation(Quat::from_rotation_y(random::<f32>() * 4.712389)),
                     ..default()
                 },
-                Astronaut {},
-            ))
-            .with_children(|children| {
-                children.spawn(PointLightBundle {
-                    point_light: PointLight {
-                        color: Color::WHITE,
-                        intensity: 1000.0,
-                        range: 5.0,
-                        ..default()
-                    },
-                    transform: Transform::from_xyz(1., 1., 1.),
-                    ..default()
-                });
-            });
+                Astronaut {
+                    rotation_speed_x: random::<f32>(),
+                    rotation_speed_y: random::<f32>(),
+                },
+            ));
+    }
+}
+
+pub fn astronaut_rotation(
+    mut astronaut_query: Query<(&mut Transform, &Astronaut)>,
+    time: Res<Time>,
+) {
+    for (mut transform, astronaut) in astronaut_query.iter_mut() {
+        transform.rotate_x(astronaut.rotation_speed_x * time.delta_seconds());
+        transform.rotate_y(astronaut.rotation_speed_y * time.delta_seconds());
     }
 }

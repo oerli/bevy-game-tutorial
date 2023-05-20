@@ -17,6 +17,7 @@ impl Plugin for AstronautPlugin {
         app.init_resource::<AstronautSpawnTimer>()
             .add_startup_system(spawn_astronauts)
             .add_system(tick_spawn_astronauts)
-            .add_system(spawn_astronauts_over_time);
+            .add_system(spawn_astronauts_over_time)
+            .add_system(astronaut_rotation);
     }
 }

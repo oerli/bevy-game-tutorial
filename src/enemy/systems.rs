@@ -31,7 +31,7 @@ pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
                         range: 5.0,
                         ..default()
                     },
-                    transform: Transform::from_xyz(2.5, 2.5, 2.5),
+                    transform: Transform::from_xyz(0., 1., 0.),
                     ..default()
                 });
             });
@@ -41,7 +41,6 @@ pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
 pub fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
     for (mut transform, enemy) in enemy_query.iter_mut() {
         transform.translation += enemy.direction * ENEMY_SPEED * time.delta_seconds();
-        // transform.rotation = Quat::from_xyzw(0., enemy.direction.z, 0., 1.);
     }
 }
 
@@ -50,7 +49,7 @@ pub fn update_enemy_direction(
     audio: Res<Audio>,
     asset_server: Res<AssetServer>,
 ) {
-    for (transform, mut enemy) in enemy_query.iter_mut() {
+    for (mut transform, mut enemy) in enemy_query.iter_mut() {
         let mut dierction_changed = false;
 
         let translation = transform.translation;
@@ -130,7 +129,7 @@ pub fn spawn_enemies_over_time(
                         range: 5.0,
                         ..default()
                     },
-                    transform: Transform::from_xyz(2.5, 2.5, 2.5),
+                    transform: Transform::from_xyz(0., 1., 0.),
                     ..default()
                 });
             });

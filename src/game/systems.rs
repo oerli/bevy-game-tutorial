@@ -3,14 +3,14 @@ use bevy::prelude::*;
 use super::GameState;
 
 pub fn toggle_game(
-    mut commands: Commands,
+    mut next_game_state: ResMut<NextState<GameState>>,
     keyboard_input: Res<Input<KeyCode>>,
     game_state: Res<State<GameState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         match game_state.0 {
-            GameState::Running => commands.insert_resource(NextState(Some(GameState::Paused))),
-            GameState::Paused => commands.insert_resource(NextState(Some(GameState::Running))),
+            GameState::Running => next_game_state.set(GameState::Paused),
+            GameState::Paused => next_game_state.set(GameState::Running),
         }
     }
 }

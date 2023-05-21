@@ -36,18 +36,6 @@ pub fn spawn_astronauts_over_time(
                     rotation_speed_y: thread_rng().gen_range(-1.0..1.0),
                 },
             ));
-            // .with_children(|children| {
-            //     children.spawn(PointLightBundle {
-            //         point_light: PointLight {
-            //             color: Color::WHITE,
-            //             intensity: 1000.0,
-            //             range: 5.0,
-            //             ..default()
-            //         },
-            //         transform: Transform::from_xyz(1., 1., 1.),
-            //         ..default()
-            //     });
-            // });
     }
 }
 

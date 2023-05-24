@@ -4,10 +4,10 @@ mod events;
 mod systems;
 
 mod game;
-mod menu;
+mod main_menu;
 
 use game::GamePlugin;
-use menu::MenuPlugin;
+use main_menu::MainMenuPlugin;
 use systems::*;
 
 pub const WORLD_SIZE_X: f32 = 20.;
@@ -19,7 +19,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_state::<AppState>()
         // Game Plugins
-        .add_plugin(MenuPlugin)
+        .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
         // Startup Systems
         .add_startup_system(spawn_camera)

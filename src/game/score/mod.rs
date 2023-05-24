@@ -8,8 +8,6 @@ use systems::*;
 use crate::AppState;
 use resources::*;
 
-use super::GameState;
-
 pub struct ScorePlugin;
 
 impl Plugin for ScorePlugin {
@@ -20,7 +18,7 @@ impl Plugin for ScorePlugin {
             // Enter State Systems
             .add_system(insert_score.in_schedule(OnEnter(AppState::Game)))
             // Systems
-            .add_system(update_score.in_set(OnUpdate(GameState::Running)))
+            .add_system(update_score.run_if(in_state(AppState::Game)))
             .add_system(update_high_scores)
             .add_system(high_scores_updated)
             // Exit Sate Systems

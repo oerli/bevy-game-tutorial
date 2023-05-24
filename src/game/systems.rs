@@ -14,3 +14,11 @@ pub fn toggle_game(
         }
     }
 }
+
+pub fn pause_game(mut next_game_state: ResMut<NextState<GameState>>) {
+    next_game_state.set(GameState::Paused);
+}
+
+pub fn resume_game(mut next_game_state: ResMut<NextState<GameState>>) {
+    next_game_state.set(GameState::Running);
+}

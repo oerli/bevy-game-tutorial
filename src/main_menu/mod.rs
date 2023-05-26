@@ -4,6 +4,7 @@ mod systems;
 
 use bevy::prelude::*;
 
+use systems::interactions::*;
 use systems::layout::*;
 
 use crate::AppState;
@@ -15,6 +16,11 @@ impl Plugin for MainMenuPlugin {
         app
             // On Enter System
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
+            // Systems
+            .add_systems(
+                (interact_with_play_button, interact_with_quit_button)
+                    .in_set(OnUpdate(AppState::MainMenu)),
+            )
             // On Exit System
             .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)));
     }

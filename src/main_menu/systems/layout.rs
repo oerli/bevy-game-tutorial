@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::main_menu::components::{MainMenu, PlayButton, QuitButon};
-use crate::main_menu::styles::{NORMAL_BACKGROUND_COLOR, NORMAL_BUTTON_COLOR, NORMAL_TEXT_COLOR, BUTTON_STYLE};
+use crate::main_menu::styles::*;
 
 pub fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let main_menu_entity = build_main_menu(&mut commands, &asset_server);
@@ -16,20 +16,30 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
     let main_menu_entity = commands
         .spawn((
             NodeBundle {
-                style: Style {
-                    flex_direction: FlexDirection::Column,
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    size: Size::new(Val::Percent(100.), Val::Percent(100.)),
-                    ..default()
-                },
-                background_color: NORMAL_BACKGROUND_COLOR.into(),
+                style: MAIN_MENU_STYLE,
                 ..default()
             },
             MainMenu {},
         ))
         .with_children(|parent| {
             // title
+            parent.spawn(NodeBundle {
+                style: TITLE_STYLE,
+                ..default()
+            });
+
+            parent.spawn(TextBundle {
+                text: Text {
+                    sections: vec![TextSection::new(
+                        "Bevy Tutorial Game",
+                        get_text_style(&asset_server),
+                    )],
+                    alignment: TextAlignment::Center,
+                    ..default()
+                },
+                ..default()
+            });
+
             // play button
             parent
                 .spawn((
@@ -45,11 +55,7 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
                         text: Text {
                             sections: vec![TextSection::new(
                                 "Play",
-                                TextStyle {
-                                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                                    font_size: 32.,
-                                    color: NORMAL_TEXT_COLOR.into(),
-                                },
+                                get_text_style(&asset_server),
                             )],
                             alignment: TextAlignment::Center,
                             ..default()
@@ -59,31 +65,27 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
                 });
             // quit button
             parent
-            .spawn((
-                ButtonBundle {
-                    style: BUTTON_STYLE,
-                    background_color: NORMAL_BUTTON_COLOR.into(),
-                    ..default()
-                },
-                QuitButon {},
-            ))
-            .with_children(|parent| {
-                parent.spawn(TextBundle {
-                    text: Text {
-                        sections: vec![TextSection::new(
-                            "Quit",
-                            TextStyle {
-                                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                                font_size: 32.,
-                                color: NORMAL_TEXT_COLOR.into(),
-                            },
-                        )],
-                        alignment: TextAlignment::Center,
+                .spawn((
+                    ButtonBundle {
+                        style: BUTTON_STYLE,
+                        background_color: NORMAL_BUTTON_COLOR.into(),
                         ..default()
                     },
-                    ..default()
+                    QuitButon {},
+                ))
+                .with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text {
+                            sections: vec![TextSection::new(
+                                "Quit",
+                                get_text_style(&asset_server),
+                            )],
+                            alignment: TextAlignment::Center,
+                            ..default()
+                        },
+                        ..default()
+                    });
                 });
-            });
         })
         .id();
     main_menu_entity

@@ -5,11 +5,13 @@ mod enemy;
 mod player;
 mod score;
 mod systems;
+mod ui;
 
 use astronaut::AstronautPlugin;
 use enemy::EnemyPlugin;
 use player::PlayerPlugin;
 use score::ScorePlugin;
+use ui::hud::HUDPlugin;
 
 use crate::events::GameOver;
 use crate::AppState;
@@ -30,6 +32,7 @@ impl Plugin for GamePlugin {
             .add_plugin(EnemyPlugin)
             .add_plugin(PlayerPlugin)
             .add_plugin(ScorePlugin)
+            .add_plugin(HUDPlugin)
             // Systems
             .add_system(toggle_game.run_if(in_state(AppState::Game)))
             // On Exit System

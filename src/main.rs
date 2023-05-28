@@ -4,10 +4,10 @@ mod events;
 mod systems;
 
 mod game;
-mod main_menu;
+mod menu;
 
 use game::GamePlugin;
-use main_menu::MainMenuPlugin;
+use menu::MainMenuPlugin;
 use systems::*;
 
 pub const WORLD_SIZE_X: f32 = 20.;

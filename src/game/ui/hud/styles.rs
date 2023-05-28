@@ -15,5 +15,6 @@ pub const HUD_TEXT_STYLE: Style = Style {
     align_items: AlignItems::Center,
     size: Size::new(Val::Px(300.), Val::Px(40.)),
     gap: Size::new(Val::Px(8.), Val::Px(8.)),
+    margin: UiRect::new(Val::Px(15.), Val::Px(15.), Val::Px(15.), Val::Px(15.)),
     ..Style::DEFAULT
 };

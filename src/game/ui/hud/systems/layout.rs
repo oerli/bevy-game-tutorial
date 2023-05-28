@@ -24,7 +24,6 @@ fn build_hud_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> E
             HUDMenu {},
         ))
         .with_children(|parent| {
-            
             parent.spawn((
                 TextBundle {
                     text: Text {
@@ -50,16 +49,22 @@ fn build_hud_menu(commands: &mut Commands, asset_server: &Res<AssetServer>) -> E
                 ..default()
             });
 
-            parent.spawn(TextBundle {
-                text: Text {
-                    sections: vec![TextSection::new("XXX", get_text_style(&asset_server))],
-                    alignment: TextAlignment::Center,
+            parent.spawn((
+                TextBundle {
+                    text: Text {
+                        sections: vec![
+                            TextSection::new("Enemies: ", get_text_style(&asset_server)),
+                            TextSection::new("0", get_text_style(&asset_server)),
+                        ],
+                        alignment: TextAlignment::Center,
+                        ..default()
+                    },
+                    background_color: Color::DARK_GRAY.into(),
+                    style: HUD_TEXT_STYLE,
                     ..default()
                 },
-                background_color: Color::DARK_GRAY.into(),
-                style: HUD_TEXT_STYLE,
-                ..default()
-            });
+                EnemiesText {},
+            ));
         })
         .id();
 

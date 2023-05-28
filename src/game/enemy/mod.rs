@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 pub mod components;
-mod resources;
+pub mod resources;
 mod systems;
 
 pub const ENEMY_SPAWN_TIMER: f32 = 5.;
@@ -22,6 +22,7 @@ impl Plugin for EnemyPlugin {
         app
             // Resources
             .init_resource::<EnemySpawnTimer>()
+            .init_resource::<Enemies>()
             // Enter State System
             .add_system(spawn_enemies.in_schedule(OnEnter(AppState::Game)))
             // Systems

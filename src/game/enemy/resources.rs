@@ -14,3 +14,16 @@ impl Default for EnemySpawnTimer {
         }
     }
 }
+
+#[derive(Resource)]
+pub struct Enemies {
+    pub value: u32,
+}
+
+impl Default for Enemies {
+    fn default() -> Self {
+        Enemies {
+            value: 0,
+        }
+    }
+}

@@ -7,10 +7,16 @@ use crate::{WORLD_SIZE_X, WORLD_SIZE_Z};
 use super::components::*;
 use super::resources::*;
 
-pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_enemies(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut enemies: ResMut<Enemies>,
+) {
     for _ in 0..AMOUNT_OF_ENEMIES {
         let random_x = random::<f32>() * WORLD_SIZE_X;
         let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+        enemies.value += 1;
 
         commands
             .spawn((
@@ -38,11 +44,16 @@ pub fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 }
 
-pub fn despawn_enemies(mut commands: Commands, enemy_query: Query<Entity, With<Enemy>>) {
+pub fn despawn_enemies(
+    mut commands: Commands,
+    enemy_query: Query<Entity, With<Enemy>>,
+    mut enemies: ResMut<Enemies>,
+) {
     for enemy_entity in enemy_query.iter() {
         commands.entity(enemy_entity).despawn_recursive();
-        
     }
+
+    enemies.value = 0;
 }
 
 pub fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
@@ -112,10 +123,13 @@ pub fn spawn_enemies_over_time(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     enemy_spawn_timer: Res<EnemySpawnTimer>,
+    mut enemies: ResMut<Enemies>
 ) {
     if enemy_spawn_timer.timer.finished() {
         let random_x = random::<f32>() * WORLD_SIZE_X;
         let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+        enemies.value += 1;
 
         commands
             .spawn((

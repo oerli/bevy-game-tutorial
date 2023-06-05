@@ -7,6 +7,8 @@ use crate::{WORLD_SIZE_X, WORLD_SIZE_Z};
 use super::components::*;
 use super::resources::*;
 
+use crate::game::player::components::Player;
+
 pub fn spawn_enemies(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -123,11 +125,22 @@ pub fn spawn_enemies_over_time(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     enemy_spawn_timer: Res<EnemySpawnTimer>,
-    mut enemies: ResMut<Enemies>
+    mut enemies: ResMut<Enemies>,
+    player_query: Query<&Transform, With<Player>>,
 ) {
     if enemy_spawn_timer.timer.finished() {
-        let random_x = random::<f32>() * WORLD_SIZE_X;
-        let random_z = random::<f32>() * WORLD_SIZE_Z;
+        let transform = loop {
+            let random_x = random::<f32>() * WORLD_SIZE_X;
+            let random_z = random::<f32>() * WORLD_SIZE_Z;
+
+            let transform = Transform::from_xyz(random_x, 0., random_z);
+
+            if let Ok(player_transform) = player_query.get_single() {
+                if player_transform.translation.distance(transform.translation) > 2. {
+                    break transform;
+                }
+            }
+        };
 
         enemies.value += 1;
 
@@ -135,7 +148,7 @@ pub fn spawn_enemies_over_time(
             .spawn((
                 SceneBundle {
                     scene: asset_server.load("models/craft_racer.glb#Scene0"),
-                    transform: Transform::from_xyz(random_x, 0., random_z),
+                    transform: transform,
                     ..default()
                 },
                 Enemy {

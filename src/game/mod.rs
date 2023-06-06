@@ -14,6 +14,7 @@ use player::PlayerPlugin;
 use score::ScorePlugin;
 use ui::hud::HUDPlugin;
 use terrain::TerrainPlugin;
+use ui::pause::PauseMenuPlugin;
 
 use crate::events::GameOver;
 use crate::AppState;
@@ -36,10 +37,11 @@ impl Plugin for GamePlugin {
             .add_plugin(ScorePlugin)
             .add_plugin(HUDPlugin)
             .add_plugin(TerrainPlugin)
+            .add_plugin(PauseMenuPlugin)
             // Systems
             .add_system(toggle_game.run_if(in_state(AppState::Game)))
             // On Exit System
-            .add_system(resume_game.in_schedule(OnExit(AppState::Game)));
+            .add_system(resume_game.in_schedule(OnExit(GameState::Paused)));
     }
 }
 

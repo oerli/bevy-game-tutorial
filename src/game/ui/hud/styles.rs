@@ -3,7 +3,7 @@ use bevy::prelude::*;
 pub const HUD_MENU_STYLE: Style = Style {
     flex_direction: FlexDirection::Row,
     justify_content: JustifyContent::Center,
-    align_items: AlignItems::Center,
+    align_items: AlignItems::FlexStart,
     size: Size::new(Val::Percent(100.), Val::Px(80.)),
     gap: Size::new(Val::Px(8.), Val::Px(8.)),
     ..Style::DEFAULT

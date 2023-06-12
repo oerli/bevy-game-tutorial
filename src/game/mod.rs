@@ -12,14 +12,14 @@ use astronaut::AstronautPlugin;
 use enemy::EnemyPlugin;
 use player::PlayerPlugin;
 use score::ScorePlugin;
-use ui::hud::HUDPlugin;
 use terrain::TerrainPlugin;
+use ui::hud::HUDPlugin;
 use ui::pause::PauseMenuPlugin;
 
 use crate::events::GameOver;
 use crate::AppState;
 
-use self::systems::*;
+use systems::*;
 
 pub struct GamePlugin;
 
@@ -35,8 +35,8 @@ impl Plugin for GamePlugin {
             .add_plugin(EnemyPlugin)
             .add_plugin(PlayerPlugin)
             .add_plugin(ScorePlugin)
-            .add_plugin(HUDPlugin)
             .add_plugin(TerrainPlugin)
+            .add_plugin(HUDPlugin)
             .add_plugin(PauseMenuPlugin)
             // Systems
             .add_system(toggle_game.run_if(in_state(AppState::Game)))
@@ -47,7 +47,7 @@ impl Plugin for GamePlugin {
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
-    #[default]
     Running,
+    #[default]
     Paused,
 }

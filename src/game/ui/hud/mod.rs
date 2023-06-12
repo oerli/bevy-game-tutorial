@@ -14,8 +14,8 @@ pub struct HUDPlugin;
 
 impl Plugin for HUDPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_hud_menu.in_schedule(OnEnter(AppState::Game)))
-            .add_system(despawn_hud_menu.in_schedule(OnExit(AppState::Game)))
+        app.add_system(spawn_hud_menu.in_schedule(OnEnter(GameState::Running)))
+            .add_system(despawn_hud_menu.in_schedule(OnExit(GameState::Running)))
             .add_system(
                 update_score_in_hud_menu
                     .in_set(OnUpdate(AppState::Game))

@@ -6,6 +6,7 @@ mod systems;
 mod game;
 mod menu;
 
+use bevy_panorbit_camera::PanOrbitCameraPlugin;
 use game::GamePlugin;
 use menu::MainMenuPlugin;
 use systems::*;
@@ -17,6 +18,7 @@ fn main() {
     App::new()
         // Bevy Plugins
         .add_plugins(DefaultPlugins)
+        .add_plugin(PanOrbitCameraPlugin)
         .add_state::<AppState>()
         // Game Plugins
         .add_plugin(MainMenuPlugin)

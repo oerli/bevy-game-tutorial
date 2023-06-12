@@ -1,5 +1,6 @@
 use bevy::app::AppExit;
 use bevy::prelude::*;
+use bevy_panorbit_camera::PanOrbitCamera;
 
 use crate::events::*;
 use crate::AppState;
@@ -11,17 +12,28 @@ pub fn spawn_camera(mut commands: Commands) {
         brightness: 1.,
     });
 
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(WORLD_SIZE_X * 1.5, WORLD_SIZE_Z / 2., WORLD_SIZE_Z * 1.5)
+    commands.spawn((
+        Camera3dBundle {
+            transform: Transform::from_xyz(
+                WORLD_SIZE_X * 1.5,
+                WORLD_SIZE_Z / 2.,
+                WORLD_SIZE_Z * 1.5,
+            )
             .looking_at(
                 Vec3::new(WORLD_SIZE_X / 2., -1., WORLD_SIZE_Z / 2.),
                 Vec3::Y,
             ),
-        ..default()
-    });
+            ..default()
+        },
+        PanOrbitCamera::default(),
+    ));
 }
 
-pub fn transition_to_game_state(mut next_app_state: ResMut<NextState<AppState>>, keyboard_input: Res<Input<KeyCode>>, app_state: Res<State<AppState>>) {
+pub fn transition_to_game_state(
+    mut next_app_state: ResMut<NextState<AppState>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    app_state: Res<State<AppState>>,
+) {
     if keyboard_input.just_pressed(KeyCode::G) {
         if app_state.0 != AppState::Game {
             next_app_state.set(AppState::Game);
@@ -30,7 +42,11 @@ pub fn transition_to_game_state(mut next_app_state: ResMut<NextState<AppState>>,
     }
 }
 
-pub fn transition_to_menu_state(mut next_app_state: ResMut<NextState<AppState>>, keyboard_input: Res<Input<KeyCode>>, app_state: Res<State<AppState>>) {
+pub fn transition_to_menu_state(
+    mut next_app_state: ResMut<NextState<AppState>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    app_state: Res<State<AppState>>,
+) {
     if keyboard_input.just_pressed(KeyCode::M) {
         if app_state.0 != AppState::MainMenu {
             next_app_state.set(AppState::MainMenu);

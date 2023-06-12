@@ -7,7 +7,6 @@ use crate::game::ui::pause::components::*;
 use crate::menu::styles::{HOVERED_BUTTON_COLOR, NORMAL_BUTTON_COLOR, PRESSED_BUTTON_COLOR};
 
 pub fn interact_with_play_button(
-    mut next_app_state: ResMut<NextState<AppState>>, 
     mut next_game_state: ResMut<NextState<GameState>>, 
     mut button_query: Query<
         (&Interaction, &mut BackgroundColor),
@@ -18,7 +17,6 @@ pub fn interact_with_play_button(
         match *interaction {
             Interaction::Clicked => {
                 *background_color = PRESSED_BUTTON_COLOR.into();
-                next_app_state.set(AppState::Game);
                 next_game_state.set(GameState::Running);
             }
             Interaction::Hovered => {
